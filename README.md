@@ -9,4 +9,6 @@ semiclassical_collapse_Rinne.c      - Chapter 4
 semiclassical_collapse_Stewart.c    - Chapter 5
 semiclassical_collapse_Ori.c        - Chapter 6
 
+In addition, the "nb" files are Mathematica notebooks where I calculated the differential equations needed for the simulations. 
+
 Any questions about these simulations, feel free to email me at benji.berczi@gmail.com.
