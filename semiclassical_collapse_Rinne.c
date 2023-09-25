@@ -1,8 +1,17 @@
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*
+This code was written by Benjamin Berczi as part of the PhD project titled "Simulating Semiclassical Black Holes" from the University of Nottingham.
+
+It is a self-contained C file that simulates a massless quantum scalar field coupled to Einstein gravity in the ADM formulation.
+
+Details may be found in Benjamin Berczi's publications and PhD thesis.
+
+*/
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /* Initialising the libraries and constants for the code */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -587,7 +596,7 @@ double phi_mode_profile_massive(double msq, double k, int l, double r) {
 double phi_mode_profile_massive_prime(double msq, double k, int l, double r) {
     return (-k * k / sqrt(PI * sqrt(k * k + msq)) * gsl_sf_bessel_jl_safe(l + 1, k * r) / pow(r, l));
 }
-void initial_conditions(double amplitude, Classical_fields* c_fields, Metric_Fields* metric) {
+void initial_conditions(Classical_fields* c_fields, Metric_Fields* metric) {
     double x[lattice_size];
     make_points(x);
 
@@ -717,7 +726,7 @@ void set_bi_linears(int i, Bi_Linears* bi_linears, Classical_fields* c_fields, Q
     del_theta_phi_del_theta_phi_over_r_sq = 0.0;
 
     if (coherent_state_switch != 0) {
-        phi_phi = c_fields->phi[i] * c_fields->phi[i];
+        //phi_phi = c_fields->phi[i] * c_fields->phi[i];
         chi_chi = c_fields->chi[i] * c_fields->chi[i];
         pi_pi = c_fields->pi[i] * c_fields->pi[i];
         chi_pi = c_fields->chi[i] * c_fields->pi[i];
@@ -833,7 +842,7 @@ double set_cosm_constant(Classical_fields* c_fields, Quantum_fields** q_fields, 
         }
     //}
 
-        return del_theta_phi_del_theta_phi_over_r_sq;st;
+        return del_theta_phi_del_theta_phi_over_r_sq;
 }
 
 
@@ -1708,7 +1717,7 @@ double full_evolution(double** first_der, double** second_der, double** sixth_de
             int l_value = l_start;
             r = r_x(x[i]);
             Bi_Linears    bi_linears;
-            calc_bi_linears(i, &bi_linears, c_fields, q_fields, metric, cc);
+            set_bi_linears(i, &bi_linears, c_fields, q_fields, metric, cc);
 
             alpha = metric->alpha[i];
             alpha_prime = first_deriv(i, metric->alpha);
@@ -2294,7 +2303,7 @@ void main() {
     set_zero(c_fields_k4, q_fields_k4);
     set_zero(c_fields_sum, q_fields_sum);
 
-    initial_conditions(amplitude, c_fields, metric);
+    initial_conditions(c_fields, metric);
 
     initial_conditions_quantum(c_fields, q_fields, metric);
 

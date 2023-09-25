@@ -1,3 +1,13 @@
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*
+This code was written by Benjamin Berczi as part of the PhD project titled "Simulating Semiclassical Black Holes" from the University of Nottingham.
+
+It is a self-contained C file that simulates a massless quantum scalar field coupled to Einstein gravity in the ADM formulation.
+
+Details may be found in Benjamin Berczi's publications and PhD thesis.
+
+*/
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /* Initialising the libraries for the code */
@@ -1437,7 +1447,7 @@ void save_field_t(double field[evolve_time_int_per_five][lattice_size_buff]) {
         }
     }
     fclose(finout);
-}/
+}
 void save_A(double *field){
 
     FILE * finout;
@@ -2003,88 +2013,6 @@ void save_stress_tensor(int n, double cos_const, Classical_fields *c_fields, Qua
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /* Function that saves correlation function at the end of simulation from r=0 to r=r_max */
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void find_q_fields_t_star(int t, Quantum_fields** q_fields, Quantum_fields** q_fields_t_star){
-    
-        for (int i = buff_size; i < lattice_size_buff; i++) {
-            if (t == (int)(t_star_fin1[i-buff_size])) {
-                for (int k = 0; k < number_of_k_modes; ++k) {
-                    for (int l = 0; l < number_of_l_modes; ++l) {
-                        for (int which_q_field = 0; which_q_field < number_of_q_fields; ++which_q_field) {
-                            q_fields_t_star[which_q_field]->phi[k][l][i]  = q_fields[which_q_field]->phi[k][l][i];
-                        }
-                    }
-                }
-            }
-        }
-
-        for (int i = buff_size; i < lattice_size_buff; i++) {
-            if (t == (int)(t_star_fin2[i - buff_size])) {
-                for (int k = 0; k < number_of_k_modes; ++k) {
-                    for (int l = 0; l < number_of_l_modes; ++l) {
-                        for (int which_q_field = 0; which_q_field < number_of_q_fields; ++which_q_field) {
-                            q_fields_t_star[which_q_field]->pi[k][l][i] = q_fields[which_q_field]->phi[k][l][i];
-                        }
-                    }
-                }
-            }
-        }
-
-
-}
-
-void save_correlator_half_t_star(Quantum_fields** q_fields, double** correlator_half){
-
-    //double correlator_half[lattice_size][lattice_size];
-
-    #pragma omp parallel for
-    for (int i = buff_size; i < lattice_size_buff; ++i) {
-        for (int j = buff_size; j < lattice_size_buff; ++j) {
-            
-            __complex__ double Phi_mode1, Phi_mode2;
-            double phi_phi, phi1_phi1, phi2_phi2;
-            double r1, r2, r_l1, r_l2;
-            int l_value;
-            phi_phi = 0;
-            phi1_phi1 = 0;
-            phi2_phi2 = 0;
-
-            r1=(i-buff_size)*dr;
-            r2=(j-buff_size)*dr;
-            //r1 = r_star_fin[i-buff_size];
-            //r2 = r_star_fin[j-buff_size];
-
-            for (int k = 0; k < number_of_k_modes; ++k) {
-                for (int l = 0; l < number_of_l_modes; ++l) {
-                    for (int which_q_field = 0; which_q_field < number_of_q_fields; ++which_q_field) {
-                        l_value = l_start + l * l_step;
-                        r_l1 = pow(r1, l_value);
-                        r_l2 = pow(r2, l_value);
-                           
-                        Phi_mode1 = r_l1 * (q_fields[which_q_field]->phi[k][l][i]);
-                        
-                        Phi_mode2 = r_l2 * (q_fields[which_q_field]->pi[k][l][j]);
-                        
-                        
-                        phi_phi   = phi_phi   +  ghost_or_physical[which_q_field] * dk / (4.0 * PI) * (2.0 * l_value + 1.0) * __real__ (Phi_mode1 * conj(Phi_mode2));
-                        //phi1_phi1 = phi1_phi1 + hbar * ghost_or_physical[which_q_field] * dk / (4.0 * PI) * (2.0 * l_value + 1.0) * __real__ (Phi_mode1 * conj(Phi_mode1));
-                        //phi2_phi2 = phi2_phi2 + hbar * ghost_or_physical[which_q_field] * dk / (4.0 * PI) * (2.0 * l_value + 1.0) * __real__ (Phi_mode2 * conj(Phi_mode2));
-                    }
-                }
-            }
-            correlator_half[i-buff_size][j-buff_size] = phi_phi;// -c_fields->phi[i] * c_fields->phi[j];
-        }
-    }
-    
-    FILE* finout;
-    finout = fopen("correlator_t_star.txt", "w");
-    for (int i = 0; i < lattice_size; ++i) {
-        fprintf(finout, "\n");
-        for (int j = 0; j < lattice_size; ++j) {
-            fprintf(finout, "%.20f ", (correlator_half[i][j]));
-        }
-    }
-    fclose(finout);
-}
 void save_correlator_half(int n, Quantum_fields** q_fields, double** correlator_half) {
 
     //double correlator_half[lattice_size][lattice_size];
@@ -2319,7 +2247,7 @@ int fullEvolution(double b_i[nu_legendre], double a_ij[nu_legendre][nu_legendre]
                                     Metric_Fields *metric_RK1, Metric_Fields *metric_RK2, Metric_Fields *metric_RK3, Metric_Fields *metric_RK4,
                                     Metric_Fields *metric_RK5, Metric_Fields *metric_RK_sum, Metric_Fields *metric, 
                                     double alpha_save[evolve_time_int], double cos_const, double timestart,
-                                    Quantum_fields** q_fields_t_star, double** correlator_half, double field_save[evolve_time_int_per_five][lattice_size_buff], double field_save2[evolve_time_int_per_five][lattice_size_buff]){
+                                    Quantum_fields** q_fields_t_star, double** correlator_half, double field_save[evolve_time_int_per_five][lattice_size_buff]){
     double r[lattice_size_buff];
     make_points(r);
 
@@ -2469,11 +2397,7 @@ int fullEvolution(double b_i[nu_legendre], double a_ij[nu_legendre][nu_legendre]
                                                                                                                         +b_i[2]*q_fields_RK3[which_q_field]->chi[k][l][i]+b_i[3]*q_fields_RK4[which_q_field]->chi[k][l][i]+b_i[4]*q_fields_RK5[which_q_field]->chi[k][l][i]);
                             q_fields[which_q_field]->pi[k][l][i]  = q_fields[which_q_field]->pi[k][l][i]  + dt*(b_i[0]*q_fields_RK1[which_q_field]->pi[k][l][i] +b_i[1]*q_fields_RK2[which_q_field]->pi[k][l][i]
                                                                                                                         +b_i[2]*q_fields_RK3[which_q_field]->pi[k][l][i] +b_i[3]*q_fields_RK4[which_q_field]->pi[k][l][i] +b_i[4]*q_fields_RK5[which_q_field]->pi[k][l][i]);
-                            //if (isnan(q_fields[which_q_field]->phi[k][l][i])) {
-                            //    printf("\n nan \n\n");
-                            //    printf("at k=%d, l=%d and i=%d", k, l, i);
-                            //    break;
-                           // }
+                            
                         }
                     }
                 }
@@ -2491,8 +2415,6 @@ int fullEvolution(double b_i[nu_legendre], double a_ij[nu_legendre][nu_legendre]
                 
 
             }
-
-            find_q_fields_t_star(n, q_fields, q_fields_t_star);
             
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2551,7 +2473,7 @@ int fullEvolution(double b_i[nu_legendre], double a_ij[nu_legendre][nu_legendre]
             if (n == 950) {
                 save_correlator_half(3,q_fields, correlator_half);
             }*/
-            //printf("\n and took %f\n", n, omp_get_wtime() - timestart);
+            printf("\n and took %f\n", n, omp_get_wtime() - timestart);
             
             
     }
@@ -2632,7 +2554,6 @@ void main(){
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////* DEFINE VARIABLES AND ASSIGN ALL THE MEMORY *//////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //printf("gomp cpu : %s\n", getenv("GOMP_CPU_AFFINITY"));
 
     /////////////////////* Runge-Kutta things *///////////////////////////////////////////////////////////////////////////////////////////////////
     double   a_ij[nu_legendre][nu_legendre];             //coefficients of the Runge-Kutta evolution
@@ -2988,26 +2909,9 @@ void main(){
         rho[i] = 1.0 / (2.0 * A) * (pi_pi / (B * B) + chi_chi) + 1.0 / B * del_theta_phi_del_theta_phi_over_r_sq - cosm_const;
       
     }   
-    // Calculate Hamiltonian constraint, using rho calculated above, as a function of the radius
-    for (int i = buff_size; i < lattice_size_buff; i++) {
-        double A, B, R;
-        A = metric->A[i];
-        B = metric->B[i];
-        R = r[i];
-        massadm[i] = R / 2.0 * sqrt(B) * (1.0 - 1.0 / (A * B * R * R) * pow(R * B + 0.5 * R * R * first_deriv(i, metric->B), 2.0));
-
-        ham_r[i] =(first_deriv(i, metric->D_B)
-                + (r[i] != 0.0 ? 1 / r[i] * (metric->lambda[i] + metric->D_B[i] - metric->U_tilda[i] - 4.0 * lambda_B_over_A[i])
-                    : first_deriv(i, metric->lambda) + first_deriv(i, metric->D_B) - first_deriv(i, metric->U_tilda) - 4.0 * first_deriv(i, lambda_B_over_A))
-                - metric->D_B[i] * (0.25 * metric->D_B[i] + 0.5 * metric->U_tilda[i] + 2.0 * lambda_B_over_A[i])
-                - metric->A[i] * metric->K_B[i] * (2.0 * metric->K[i] - 3.0 * metric->K_B[i])
-                + metric->A[i] * (rho[i]) * M_P * M_P);
-        
-    }
 
     save_field_t(field_save);
     save_rho(rho);
-    save_ham_r(ham_r);
     save_mass_r(massadm);
     save_A(metric->A);
     save_B(metric->B);
