@@ -1,7 +1,7 @@
 The codes here correspond to simulations of gravitational collapse of a quantum field, which was the topic of my PhD.
 The simulations are explained in detail in my PhD thesis available at: https://eprints.nottingham.ac.uk/77527/
 
-There are five simulations that correspond to a chapter in my thesis:
+These are five separate simulations that each correspond to a chapter in my thesis:
 
 semiclassical_collapse_Alcubierre.c - Chapter 2
 
